@@ -1,0 +1,696 @@
+@model IEnumerable<CompanySystem.Web.ViewModels.DepartmentViewModel>
+
+@{
+    ViewData["Title"] = "Departments";
+}
+
+<div class="department-header bg-gradient-primary text-white py-4 mb-4 rounded-lg shadow-sm">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center">
+                    <div class="header-icon me-3">
+                        <i class="fas fa-building fa-2x"></i>
+                    </div>
+                    <div>
+                        <h1 class="h2 mb-1 fw-bold">Department Management</h1>
+                        <p class="mb-0 text-white-75">
+                            Manage and organize your company departments
+                            @if (ViewBag.TotalDepartments != null)
+                            {
+                                <span class="badge bg-light text-primary ms-2 px-2 py-1">@ViewBag.TotalDepartments Total</span>
+                            }
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="@Url.Action("Create", "Department")" class="btn btn-light btn-lg shadow-sm">
+                    <i class="fas fa-plus me-2"></i>
+                    Create Department
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+
+            <!-- Enhanced One-Line Search and Filter Section -->
+            <div class="search-panel card border-0 shadow-sm mb-4">
+                <div class="card-body py-3">
+                    <form method="get" action="@Url.Action("Index", "Department")" id="searchForm">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-auto">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-search text-primary me-2 fs-5"></i>
+                                    <span class="fw-semibold text-muted">Search & Filter:</span>
+                                </div>
+                            </div>
+                            <div class="col-lg-5 col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white border-end-0 pe-0">
+                                        <i class="fas fa-search text-muted small"></i>
+                                    </span>
+                                    <input type="text" 
+                                           id="searchTerm" 
+                                           name="searchTerm" 
+                                           class="form-control border-start-0 ps-2" 
+                                           placeholder="Search departments..." 
+                                           value="@ViewBag.SearchTerm"
+                                           autocomplete="off">
+                                    <button type="button" id="clearSearch" class="btn btn-outline-secondary border-start-0 px-2" style="display: none;">
+                                        <i class="fas fa-times small"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-3">
+                                <select id="sortBy" name="sortBy" class="form-select">
+                                    <option value="name" selected="@(ViewBag.SortBy == "name")">📝 Name (A-Z)</option>
+                                    <option value="name_desc" selected="@(ViewBag.SortBy == "name_desc")">📝 Name (Z-A)</option>
+                                    <option value="date" selected="@(ViewBag.SortBy == "date")">📅 Oldest First</option>
+                                    <option value="date_desc" selected="@(ViewBag.SortBy == "date_desc")">📅 Newest First</option>
+                                    <option value="creator" selected="@(ViewBag.SortBy == "creator")">👤 Creator (A-Z)</option>
+                                    <option value="creator_desc" selected="@(ViewBag.SortBy == "creator_desc")">👤 Creator (Z-A)</option>
+                                </select>
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-primary px-4" id="searchBtn">
+                                    <i class="fas fa-search me-1"></i>
+                                    Apply
+                                </button>
+                            </div>
+                            @if (!string.IsNullOrEmpty(ViewBag.SearchTerm as string))
+                            {
+                                <div class="col-auto">
+                                    <a href="@Url.Action("Index", "Department")" class="btn btn-outline-secondary">
+                                        <i class="fas fa-undo me-1"></i>
+                                        Clear
+                                    </a>
+                                </div>
+                            }
+                            <div class="col-auto ms-auto">
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    <span id="searchStatus">@(string.IsNullOrEmpty(ViewBag.SearchTerm as string) ? "Showing all departments" : $"Found {ViewBag.TotalDepartments} result(s)")</span>
+                                </small>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Enhanced Alert Messages -->
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm" role="alert">
+                    <div class="d-flex align-items-center">
+                        <div class="alert-icon me-3">
+                            <i class="fas fa-check-circle fa-lg"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="alert-heading mb-1">Success!</h6>
+                            <div>@TempData["SuccessMessage"]</div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm" role="alert">
+                    <div class="d-flex align-items-center">
+                        <div class="alert-icon me-3">
+                            <i class="fas fa-exclamation-triangle fa-lg"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h6 class="alert-heading mb-1">Error!</h6>
+                            <div>@TempData["ErrorMessage"]</div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <!-- Enhanced Results Section -->
+            <div class="results-panel card border-0 shadow-sm">
+                @if (!string.IsNullOrEmpty(ViewBag.SearchTerm as string))
+                {
+                    <div class="card-header bg-info text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-search me-2"></i>
+                                <span>Search Results for: <strong>"@ViewBag.SearchTerm"</strong></span>
+                            </div>
+                            <span class="badge bg-light text-dark px-3 py-2">
+                                <i class="fas fa-list me-1"></i>
+                                @ViewBag.TotalDepartments result(s)
+                            </span>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-list text-primary me-2"></i>
+                            All Departments
+                        </h5>
+                    </div>
+                }
+                <div class="card-body p-0">
+                    <!-- Loading Indicator -->
+                    <div id="loadingIndicator" style="display: none;" class="text-center py-5">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <div class="mt-3">
+                            <h6 class="text-muted">Searching departments...</h6>
+                            <p class="text-muted small mb-0">Please wait while we find your results</p>
+                        </div>
+                    </div>
+                    
+                    <div id="departmentResults">
+                    @if (Model.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0 modern-table">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th class="border-0">
+                                            <a href="@Url.Action("Index", "Department", new { searchTerm = ViewBag.SearchTerm, sortBy = (ViewBag.SortBy == "name" ? "name_desc" : "name") })" 
+                                               class="text-white text-decoration-none d-flex align-items-center">
+                                                <i class="fas fa-building me-2"></i>
+                                                @Html.DisplayNameFor(model => model.DepartmentName)
+                                                @if (ViewBag.SortBy == "name")
+                                                {
+                                                    <i class="fas fa-sort-up ms-2"></i>
+                                                }
+                                                else if (ViewBag.SortBy == "name_desc")
+                                                {
+                                                    <i class="fas fa-sort-down ms-2"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="fas fa-sort ms-2 opacity-50"></i>
+                                                }
+                                            </a>
+                                        </th>
+                                        <th class="border-0">
+                                            <a href="@Url.Action("Index", "Department", new { searchTerm = ViewBag.SearchTerm, sortBy = (ViewBag.SortBy == "creator" ? "creator_desc" : "creator") })" 
+                                               class="text-white text-decoration-none d-flex align-items-center">
+                                                <i class="fas fa-user me-2"></i>
+                                                @Html.DisplayNameFor(model => model.CreatedBy)
+                                                @if (ViewBag.SortBy == "creator")
+                                                {
+                                                    <i class="fas fa-sort-up ms-2"></i>
+                                                }
+                                                else if (ViewBag.SortBy == "creator_desc")
+                                                {
+                                                    <i class="fas fa-sort-down ms-2"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="fas fa-sort ms-2 opacity-50"></i>
+                                                }
+                                            </a>
+                                        </th>
+                                        <th class="border-0">
+                                            <a href="@Url.Action("Index", "Department", new { searchTerm = ViewBag.SearchTerm, sortBy = (ViewBag.SortBy == "date" ? "date_desc" : "date") })" 
+                                               class="text-white text-decoration-none d-flex align-items-center">
+                                                <i class="fas fa-calendar me-2"></i>
+                                                @Html.DisplayNameFor(model => model.CreatedDate)
+                                                @if (ViewBag.SortBy == "date")
+                                                {
+                                                    <i class="fas fa-sort-up ms-2"></i>
+                                                }
+                                                else if (ViewBag.SortBy == "date_desc")
+                                                {
+                                                    <i class="fas fa-sort-down ms-2"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="fas fa-sort ms-2 opacity-50"></i>
+                                                }
+                                            </a>
+                                        </th>
+                                        <th class="text-center border-0">
+                                            <i class="fas fa-cogs me-2"></i>
+                                            Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr class="department-row">
+                                            <td class="align-middle">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="department-icon me-3">
+                                                        <i class="fas fa-building text-primary"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h6 class="mb-0 fw-semibold">@Html.DisplayFor(modelItem => item.DepartmentName)</h6>
+                                                        <small class="text-muted">Department</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="align-middle">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="user-avatar me-2">
+                                                        <i class="fas fa-user-circle text-secondary"></i>
+                                                    </div>
+                                                    <span>@Html.DisplayFor(modelItem => item.CreatedBy)</span>
+                                                </div>
+                                            </td>
+                                            <td class="align-middle">
+                                                <span class="text-muted">
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    @item.CreatedDate.ToLocalTime().ToString("dd/MM/yyyy")
+                                                </span>
+                                                <br>
+                                                <small class="text-muted">@item.CreatedDate.ToLocalTime().ToString("HH:mm")</small>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <div class="btn-group" role="group">
+                                                    <a href="@Url.Action("Details", "Department", new { id = item.DepartmentId })" 
+                                                       class="btn btn-outline-info btn-sm" title="View Details">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="@Url.Action("Edit", "Department", new { id = item.DepartmentId })" 
+                                                       class="btn btn-outline-warning btn-sm" title="Edit">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <a href="@Url.Action("Delete", "Department", new { id = item.DepartmentId })" 
+                                                       class="btn btn-outline-danger btn-sm" title="Delete">
+                                                        <i class="fas fa-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-state py-5">
+                            @if (!string.IsNullOrEmpty(ViewBag.SearchTerm as string))
+                            {
+                                <div class="text-center">
+                                    <div class="empty-icon mb-4">
+                                        <i class="fas fa-search fa-4x text-muted"></i>
+                                    </div>
+                                    <h4 class="text-muted mb-3">No Departments Found</h4>
+                                    <p class="text-muted mb-4">
+                                        We couldn't find any departments matching "<strong class="text-primary">@ViewBag.SearchTerm</strong>".
+                                        <br>Try adjusting your search criteria or explore other options.
+                                    </p>
+                                    <div class="empty-actions">
+                                        <a href="@Url.Action("Index", "Department")" class="btn btn-outline-primary me-2">
+                                            <i class="fas fa-undo me-2"></i>
+                                            Clear Search
+                                        </a>
+                                        <a href="@Url.Action("Create", "Department")" class="btn btn-primary">
+                                            <i class="fas fa-plus me-2"></i>
+                                            Create New Department
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="text-center">
+                                    <div class="empty-icon mb-4">
+                                        <i class="fas fa-building fa-4x text-muted"></i>
+                                    </div>
+                                    <h4 class="text-muted mb-3">No Departments Yet</h4>
+                                    <p class="text-muted mb-4">
+                                        Get started by creating your first department to organize your company structure.
+                                    </p>
+                                    <a href="@Url.Action("Create", "Department")" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-plus me-2"></i>
+                                        Create Your First Department
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    }
+                    </div> 
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    
+    <script>
+        // Enhanced Department Search with AJAX
+        class DepartmentSearch {
+            constructor() {
+                this.searchInput = document.getElementById('searchTerm');
+                this.sortSelect = document.getElementById('sortBy');
+                this.clearBtn = document.getElementById('clearSearch');
+                this.loadingIndicator = document.getElementById('loadingIndicator');
+                this.resultsContainer = document.getElementById('departmentResults');
+                this.searchStatus = document.getElementById('searchStatus');
+                this.searchForm = document.getElementById('searchForm');
+                
+                this.searchTimeout = null;
+                this.currentRequest = null;
+                this.lastSearchTerm = '';
+                this.lastSortBy = 'name';
+                
+                this.init();
+            }
+
+            init() {
+                // Auto-hide alerts
+                setTimeout(() => {
+                    document.querySelectorAll('.alert').forEach(alert => {
+                        alert.style.transition = 'opacity 0.5s';
+                        alert.style.opacity = '0';
+                        setTimeout(() => alert.remove(), 500);
+                    });
+                }, 5000);
+
+                // Search input events
+                this.searchInput.addEventListener('input', () => this.handleSearchInput());
+                this.searchInput.addEventListener('focus', () => this.updateSearchStatus('Type to search...'));
+                
+                // Sort change event
+                this.sortSelect.addEventListener('change', () => this.performSearch());
+                
+                // Clear button
+                this.clearBtn.addEventListener('click', () => this.clearSearch());
+                
+                // Form submit prevention (we use AJAX)
+                this.searchForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.performSearch();
+                });
+
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && this.searchInput.value) {
+                        this.clearSearch();
+                    }
+                    if (e.ctrlKey && e.key === 'k') {
+                        e.preventDefault();
+                        this.searchInput.focus();
+                    }
+                });
+
+                // Initialize UI state
+                this.updateClearButton();
+                this.updateSearchStatus('Ready');
+            }
+
+            handleSearchInput() {
+                const searchTerm = this.searchInput.value.trim();
+                this.updateClearButton();
+                
+                // Clear existing timeout
+                if (this.searchTimeout) {
+                    clearTimeout(this.searchTimeout);
+                }
+
+                // Cancel ongoing request if search term changed significantly
+                if (this.currentRequest && Math.abs(searchTerm.length - this.lastSearchTerm.length) > 3) {
+                    this.currentRequest.abort();
+                    this.currentRequest = null;
+                }
+
+                // Debounce search - now searches from first character
+                this.searchTimeout = setTimeout(() => {
+                    if (searchTerm !== this.lastSearchTerm) {
+                        this.performSearch();
+                    }
+                }, 200); // Reduced to 200ms for faster response with single character
+
+                // Update status immediately
+                if (searchTerm.length === 0) {
+                    this.updateSearchStatus('Type to search...');
+                } else {
+                    this.updateSearchStatus('Searching...');
+                }
+            }
+
+            async performSearch() {
+                const searchTerm = this.searchInput.value.trim();
+                const sortBy = this.sortSelect.value;
+
+                // Cancel previous request
+                if (this.currentRequest) {
+                    this.currentRequest.abort();
+                }
+
+                this.showLoading(true);
+                this.updateSearchStatus('Searching...');
+
+                try {
+                    // Create AbortController for this request
+                    const controller = new AbortController();
+                    this.currentRequest = controller;
+
+                    const url = new URL('@Url.Action("SearchDepartments", "Department")', window.location.origin);
+                    if (searchTerm) url.searchParams.append('searchTerm', searchTerm);
+                    url.searchParams.append('sortBy', sortBy);
+
+                    const response = await fetch(url, {
+                        signal: controller.signal,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        this.renderResults(result.data, result.searchTerm, result.count);
+                        if (searchTerm.length === 0) {
+                            this.updateSearchStatus('Showing all departments');
+                        } else {
+                            this.updateSearchStatus(`Found ${result.count} department(s) matching "${searchTerm}"`);
+                        }
+                        this.lastSearchTerm = searchTerm;
+                        this.lastSortBy = sortBy;
+                        
+                        // Update URL without page reload
+                        this.updateUrl(searchTerm, sortBy);
+                    } else {
+                        throw new Error('Search failed');
+                    }
+
+                } catch (error) {
+                    if (error.name !== 'AbortError') {
+                        console.error('Search error:', error);
+                        this.updateSearchStatus('Search failed. Please try again.');
+                        this.showError('An error occurred while searching. Please try again.');
+                    }
+                } finally {
+                    this.showLoading(false);
+                    this.currentRequest = null;
+                }
+            }
+
+            renderResults(departments, searchTerm, count) {
+                if (departments.length === 0) {
+                    this.renderEmptyState(searchTerm);
+                    return;
+                }
+
+                const tableHtml = `
+                    <div class="table-responsive fade-in">
+                        <table class="table table-hover mb-0 modern-table">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th class="border-0">
+                                        <a href="#" onclick="departmentSearch.sortBy('name')" class="text-white text-decoration-none d-flex align-items-center">
+                                            <i class="fas fa-building me-2"></i>Department Name <i class="fas fa-sort ms-2 opacity-50"></i>
+                                        </a>
+                                    </th>
+                                    <th class="border-0">
+                                        <a href="#" onclick="departmentSearch.sortBy('creator')" class="text-white text-decoration-none d-flex align-items-center">
+                                            <i class="fas fa-user me-2"></i>Created By <i class="fas fa-sort ms-2 opacity-50"></i>
+                                        </a>
+                                    </th>
+                                    <th class="border-0">
+                                        <a href="#" onclick="departmentSearch.sortBy('date')" class="text-white text-decoration-none d-flex align-items-center">
+                                            <i class="fas fa-calendar me-2"></i>Created Date <i class="fas fa-sort ms-2 opacity-50"></i>
+                                        </a>
+                                    </th>
+                                    <th class="text-center border-0">
+                                        <i class="fas fa-cogs me-2"></i>Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${departments.map(dept => `
+                                    <tr class="department-row">
+                                        <td class="align-middle">
+                                            <div class="d-flex align-items-center">
+                                                <div class="department-icon me-3">
+                                                    <i class="fas fa-building text-primary"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0 fw-semibold">${this.highlightText(dept.departmentName, searchTerm)}</h6>
+                                                    <small class="text-muted">Department</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="align-middle">
+                                            <div class="d-flex align-items-center">
+                                                <div class="user-avatar me-2">
+                                                    <i class="fas fa-user-circle text-secondary"></i>
+                                                </div>
+                                                <span>${this.highlightText(dept.createdBy, searchTerm)}</span>
+                                            </div>
+                                        </td>
+                                        <td class="align-middle">
+                                            <span class="text-muted">
+                                                <i class="fas fa-clock me-1"></i>
+                                                ${dept.createdDate}
+                                            </span>
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <div class="btn-group" role="group">
+                                                <a href="@Url.Action("Details", "Department")?id=${dept.departmentId}" class="btn btn-outline-info btn-sm" title="View Details">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="@Url.Action("Edit", "Department")?id=${dept.departmentId}" class="btn btn-outline-warning btn-sm" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="@Url.Action("Delete", "Department")?id=${dept.departmentId}" class="btn btn-outline-danger btn-sm" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                this.resultsContainer.innerHTML = tableHtml;
+            }
+
+            renderEmptyState(searchTerm) {
+                const emptyHtml = `
+                    <div class="empty-state fade-in">
+                        ${searchTerm ? `
+                            <div class="text-center">
+                                <div class="empty-icon mb-4">
+                                    <i class="fas fa-search fa-4x text-muted"></i>
+                                </div>
+                                <h4 class="text-muted mb-3">No Departments Found</h4>
+                                <p class="text-muted mb-4">
+                                    We couldn't find any departments matching "<strong class="text-primary">${searchTerm}</strong>".
+                                    <br>Try adjusting your search criteria or explore other options.
+                                </p>
+                                <div class="empty-actions">
+                                    <a href="#" onclick="departmentSearch.clearSearch()" class="btn btn-outline-primary me-2">
+                                        <i class="fas fa-undo me-2"></i>
+                                        Clear Search
+                                    </a>
+                                    <a href="@Url.Action("Create", "Department")" class="btn btn-primary">
+                                        <i class="fas fa-plus me-2"></i>
+                                        Create New Department
+                                    </a>
+                                </div>
+                            </div>
+                        ` : `
+                            <div class="text-center">
+                                <div class="empty-icon mb-4">
+                                    <i class="fas fa-building fa-4x text-muted"></i>
+                                </div>
+                                <h4 class="text-muted mb-3">No Departments Yet</h4>
+                                <p class="text-muted mb-4">
+                                    Get started by creating your first department to organize your company structure.
+                                </p>
+                                <a href="@Url.Action("Create", "Department")" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-plus me-2"></i>
+                                    Create Your First Department
+                                </a>
+                            </div>
+                        `}
+                    </div>
+                `;
+                this.resultsContainer.innerHTML = emptyHtml;
+            }
+
+            highlightText(text, searchTerm) {
+                if (!searchTerm || searchTerm.length === 0) return text;
+                const regex = new RegExp(`(${this.escapeRegex(searchTerm)})`, 'gi');
+                return text.replace(regex, '<mark>$1</mark>');
+            }
+
+            escapeRegex(string) {
+                return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            }
+
+            sortBy(field) {
+                const currentSort = this.sortSelect.value;
+                const newSort = currentSort === field ? `${field}_desc` : field;
+                this.sortSelect.value = newSort;
+                this.performSearch();
+            }
+
+            clearSearch() {
+                this.searchInput.value = '';
+                this.sortSelect.value = 'name';
+                this.updateClearButton();
+                this.updateSearchStatus('Ready');
+                
+                // Reload page to show all departments
+                window.location.href = '@Url.Action("Index", "Department")';
+            }
+
+            updateClearButton() {
+                const hasValue = this.searchInput.value.trim().length > 0;
+                this.clearBtn.style.display = hasValue ? 'block' : 'none';
+            }
+
+            updateSearchStatus(message) {
+                this.searchStatus.textContent = message;
+            }
+
+            showLoading(show) {
+                this.loadingIndicator.style.display = show ? 'block' : 'none';
+            }
+
+            showError(message) {
+                // You could implement a toast notification here
+                console.error(message);
+            }
+
+            updateUrl(searchTerm, sortBy) {
+                const url = new URL(window.location);
+                if (searchTerm) {
+                    url.searchParams.set('searchTerm', searchTerm);
+                } else {
+                    url.searchParams.delete('searchTerm');
+                }
+                url.searchParams.set('sortBy', sortBy);
+                window.history.replaceState({}, '', url);
+            }
+        }
+
+        // Initialize when DOM is ready
+        let departmentSearch;
+        document.addEventListener('DOMContentLoaded', () => {
+            departmentSearch = new DepartmentSearch();
+        });
+    </script>
+}

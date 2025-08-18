@@ -1,0 +1,81 @@
+@model CompanySystem.Web.ViewModels.DepartmentViewModel
+
+@{
+    ViewData["Title"] = "Delete Department";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0 text-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Delete Department
+                </h2>
+                <a href="@Url.Action("Index", "Department")" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to List
+                </a>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Warning!</strong> Are you sure you want to delete this department? This action cannot be undone.
+                    </div>
+
+                    <div class="card border-danger">
+                        <div class="card-header bg-danger text-white">
+                            <h4 class="card-title mb-0">Department to be Deleted</h4>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row">
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.DepartmentId):</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge bg-primary">@Html.DisplayFor(model => model.DepartmentId)</span>
+                                </dd>
+
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.DepartmentName):</dt>
+                                <dd class="col-sm-8">
+                                    <strong>@Html.DisplayFor(model => model.DepartmentName)</strong>
+                                </dd>
+
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.CreatedBy):</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.CreatedBy)</dd>
+
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.CreatedDate):</dt>
+                                <dd class="col-sm-8">@Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                                @if (!string.IsNullOrEmpty(Model.UpdatedBy))
+                                {
+                                    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.UpdatedBy):</dt>
+                                    <dd class="col-sm-8">@Html.DisplayFor(model => model.UpdatedBy)</dd>
+
+                                    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.UpdatedDate):</dt>
+                                    <dd class="col-sm-8">@Model.UpdatedDate?.ToString("dd/MM/yyyy HH:mm")</dd>
+                                }
+                            </dl>
+                        </div>
+                        <div class="card-footer">
+                            <form action="@Url.Action("Delete", "Department")" method="post" class="d-inline">
+                                @Html.HiddenFor(m => m.DepartmentId)
+                                @Html.AntiForgeryToken()
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <a href="@Url.Action("Details", "Department", new { id = Model.DepartmentId })" class="btn btn-secondary me-md-2">
+                                        <i class="fas fa-times"></i>
+                                        Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-danger" onclick="return confirm('Are you absolutely sure you want to delete this department?')">
+                                        <i class="fas fa-trash"></i>
+                                        Delete Department
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

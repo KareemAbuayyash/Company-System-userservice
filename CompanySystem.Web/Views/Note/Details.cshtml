@@ -1,0 +1,109 @@
+@model CompanySystem.Web.ViewModels.NoteViewModel
+@{
+    ViewData["Title"] = "Note Details";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">
+                            <i class="fas fa-sticky-note"></i> Note Details
+                        </h4>
+                        <div>
+                            <a asp-action="Edit" asp-route-id="@Model.NoteId" class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@Model.NoteId" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            @TempData["ErrorMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Employee ID</h6>
+                            <p class="fw-bold">@Model.EmployeeId</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Note Type</h6>
+                            <p>
+                                <span class="badge @(Model.NoteType == "Technical" ? "bg-info" : "bg-warning") fs-6">
+                                    @Model.NoteType
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="text-muted">Title</h6>
+                        <h5>@Model.Title</h5>
+                    </div>
+
+                    <div class="mb-4">
+                        <h6 class="text-muted">Content</h6>
+                        <div class="p-3 bg-light rounded">
+                            <p class="mb-0" style="white-space: pre-wrap;">@Model.Content</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Created By</h6>
+                            <p>@Model.CreatedBy</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Created Date</h6>
+                            <p>@Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</p>
+                        </div>
+                    </div>
+
+                    @if (Model.UpdatedBy != null)
+                    {
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Updated By</h6>
+                                <p>@Model.UpdatedBy</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-muted">Updated Date</h6>
+                                <p>@Model.UpdatedDate?.ToString("dd/MM/yyyy HH:mm")</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to List
+                        </a>
+                        <div>
+                            <a asp-action="Edit" asp-route-id="@Model.NoteId" class="btn btn-warning">
+                                <i class="fas fa-edit"></i> Edit Note
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

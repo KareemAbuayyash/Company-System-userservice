@@ -1,0 +1,75 @@
+@model CompanySystem.Web.ViewModels.DeleteMainPageContentViewModel
+
+@{
+    ViewData["Title"] = "Delete Content";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Delete Main Page Content</h2>
+    <a asp-action="Index" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<div class="alert alert-warning">
+    <i class="fas fa-exclamation-triangle"></i>
+    <strong>Warning!</strong> Are you sure you want to delete this content? This action cannot be undone.
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <span class="badge bg-info me-2">@Model.SectionName</span>
+            @Model.Title
+        </h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <h6 class="text-muted">Content:</h6>
+                <div class="border rounded p-3 bg-light">
+                    @Html.Raw(Model.Content.Replace("\n", "<br/>"))
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h6 class="text-muted">Information:</h6>
+                <table class="table table-sm">
+                    <tr>
+                        <td><strong>Content ID:</strong></td>
+                        <td>@Model.ContentId</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Section:</strong></td>
+                        <td><span class="badge bg-info">@Model.SectionName</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Created:</strong></td>
+                        <td>@Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Created By:</strong></td>
+                        <td>@Model.CreatedBy</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <form asp-action="Delete" method="post">
+            <input type="hidden" asp-for="ContentId" />
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Yes, Delete This Content
+                </button>
+                <div>
+                    <a asp-action="Details" asp-route-id="@Model.ContentId" class="btn btn-info">
+                        <i class="fas fa-eye"></i> View Details
+                    </a>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

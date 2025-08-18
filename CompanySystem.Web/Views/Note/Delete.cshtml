@@ -1,0 +1,74 @@
+@model CompanySystem.Web.ViewModels.DeleteNoteViewModel
+@{
+    ViewData["Title"] = "Delete Note";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-exclamation-triangle"></i> Delete Note
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Warning:</strong> Are you sure you want to delete this note? This action cannot be undone.
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Employee ID</h6>
+                            <p class="fw-bold">@Model.EmployeeId</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Note Type</h6>
+                            <p>
+                                <span class="badge @(Model.NoteType == "Technical" ? "bg-info" : "bg-warning") fs-6">
+                                    @Model.NoteType
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6 class="text-muted">Title</h6>
+                        <h5>@Model.Title</h5>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6 class="text-muted">Content</h6>
+                        <div class="p-3 bg-light rounded">
+                            <p class="mb-0" style="white-space: pre-wrap;">@Model.Content</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Created By</h6>
+                            <p>@Model.CreatedBy</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted">Created Date</h6>
+                            <p>@Model.CreatedDate.ToString("dd/MM/yyyy HH:mm")</p>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a asp-action="Details" asp-route-id="@Model.NoteId" class="btn btn-secondary me-md-2">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                        <form asp-action="Delete" method="post" class="d-inline">
+                            <input asp-for="NoteId" type="hidden" />
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this note?')">
+                                <i class="fas fa-trash"></i> Delete Note
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

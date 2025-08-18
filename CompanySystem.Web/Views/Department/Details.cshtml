@@ -1,0 +1,84 @@
+@model CompanySystem.Web.ViewModels.DepartmentViewModel
+
+@{
+    ViewData["Title"] = "Department Details";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">
+                    <i class="fas fa-building"></i>
+                    Department Details
+                </h2>
+                <div>
+                    <a href="@Url.Action("Index", "Department")" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i>
+                        Back to List
+                    </a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">@Model.DepartmentName</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.DepartmentId):</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge bg-primary">@Html.DisplayFor(model => model.DepartmentId)</span>
+                                </dd>
+
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.DepartmentName):</dt>
+                                <dd class="col-sm-8">
+                                    <strong>@Html.DisplayFor(model => model.DepartmentName)</strong>
+                                </dd>
+                            </dl>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.CreatedBy):</dt>
+                                <dd class="col-sm-8">@Html.DisplayFor(model => model.CreatedBy)</dd>
+
+                                <dt class="col-sm-4">@Html.DisplayNameFor(model => model.CreatedDate):</dt>
+                                <dd class="col-sm-8">@Model.CreatedDate.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</dd>
+
+                                @if (!string.IsNullOrEmpty(Model.UpdatedBy))
+                                {
+                                    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.UpdatedBy):</dt>
+                                    <dd class="col-sm-8">@Html.DisplayFor(model => model.UpdatedBy)</dd>
+
+                                    <dt class="col-sm-4">@Html.DisplayNameFor(model => model.UpdatedDate):</dt>
+                                    <dd class="col-sm-8">@Model.UpdatedDate?.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</dd>
+                                }
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <a href="@Url.Action("Edit", "Department", new { id = Model.DepartmentId })" class="btn btn-warning">
+                            <i class="fas fa-edit"></i>
+                            Edit Department
+                        </a>
+                        <div>
+                            <a href="@Url.Action("Delete", "Department", new { id = Model.DepartmentId })" class="btn btn-danger">
+                                <i class="fas fa-trash"></i>
+                                Delete
+                            </a>
+                            <a href="@Url.Action("Index", "Department")" class="btn btn-secondary">
+                                <i class="fas fa-list"></i>
+                                All Departments
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

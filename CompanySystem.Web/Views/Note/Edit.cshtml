@@ -1,0 +1,63 @@
+@model CompanySystem.Web.ViewModels.EditNoteViewModel
+@{
+    ViewData["Title"] = "Edit Note";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-edit"></i> Edit Note
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        <input asp-for="NoteId" type="hidden" />
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="NoteType" class="form-label"></label>
+                            <select asp-for="NoteType" class="form-select">
+                                <option value="">-- Select Note Type --</option>
+                                <option value="Technical">Technical</option>
+                                <option value="Behavioral">Behavioral</option>
+                            </select>
+                            <span asp-validation-for="NoteType" class="text-danger"></span>
+                            <div class="form-text">
+                                <strong>Technical:</strong> Notes about employee's technical skills and performance<br>
+                                <strong>Behavioral:</strong> Notes about employee's behavior and soft skills
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label"></label>
+                            <input asp-for="Title" class="form-control" placeholder="Enter note title" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Content" class="form-label"></label>
+                            <textarea asp-for="Content" class="form-control" rows="6" placeholder="Enter note content"></textarea>
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Details" asp-route-id="@Model.NoteId" class="btn btn-secondary me-md-2">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Update Note
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

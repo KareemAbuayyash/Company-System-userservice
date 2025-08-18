@@ -1,0 +1,114 @@
+@model CompanySystem.Web.ViewModels.EditMainPageContentViewModel
+
+@{
+    ViewData["Title"] = "Edit Content";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Edit Main Page Content</h2>
+    <div>
+        <a asp-action="Details" asp-route-id="@Model.ContentId" class="btn btn-info">
+            <i class="fas fa-eye"></i> View Details
+        </a>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to List
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Edit Content Information</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit" method="post">
+                    <input type="hidden" asp-for="ContentId" />
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="display: none;"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="SectionName" class="form-label"></label>
+                        <select asp-for="SectionName" class="form-select">
+                            <option value="">Select a section</option>
+                            <option value="Overview">Overview</option>
+                            <option value="AboutUs">About Us</option>
+                            <option value="Services">Services</option>
+                        </select>
+                        <span asp-validation-for="SectionName" class="text-danger"></span>
+                        <div class="form-text">Choose the section where this content will be displayed.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label"></label>
+                        <input asp-for="Title" class="form-control" placeholder="Enter the content title" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Content" class="form-label"></label>
+                        <textarea asp-for="Content" class="form-control" rows="10" 
+                                  placeholder="Enter the content text. You can use HTML tags for formatting."></textarea>
+                        <span asp-validation-for="Content" class="text-danger"></span>
+                        <div class="form-text">HTML tags are supported for text formatting.</div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="fas fa-save"></i> Update Content
+                        </button>
+                        <div>
+                            <a asp-action="Details" asp-route-id="@Model.ContentId" class="btn btn-info">
+                                <i class="fas fa-eye"></i> View Details
+                            </a>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">Tips</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-lightbulb text-warning"></i>
+                        <strong>Section Names:</strong> Choose from Overview, About Us, or Services
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-text-height text-info"></i>
+                        <strong>Title:</strong> Keep it concise and descriptive (max 200 characters)
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-code text-success"></i>
+                        <strong>Content:</strong> HTML tags are supported for formatting
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-eye text-primary"></i>
+                        <strong>Preview:</strong> Content will be displayed on the public main page
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="mb-0">Content Information</h6>
+            </div>
+            <div class="card-body">
+                <p><strong>Content ID:</strong> @Model.ContentId</p>
+                <p><strong>Current Section:</strong> <span class="badge bg-info">@Model.SectionName</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
