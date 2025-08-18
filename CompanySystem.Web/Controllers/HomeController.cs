@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using CompanySystem.Business.Interfaces;
 using CompanySystem.Web.ViewModels;
 
 namespace CompanySystem.Web.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private readonly IMainPageContentService _mainPageContentService;

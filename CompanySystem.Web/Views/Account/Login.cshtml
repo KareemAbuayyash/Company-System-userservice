@@ -1,0 +1,93 @@
+@model CompanySystem.Web.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Company System</title>
+    <link rel="stylesheet" href="~/css/login.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+<body>
+    <div class="login-container">
+        <div class="company-logo">
+            <i class="fas fa-building"></i>
+        </div>
+        
+        <div class="login-header">
+            <h1 class="login-title">Company System</h1>
+            <p class="login-subtitle">Please sign in to access the system</p>
+        </div>
+
+        <form asp-action="Login" asp-controller="Account" method="post" id="loginForm">
+            <input type="hidden" asp-for="ReturnUrl" />
+            
+            @if (!ViewData.ModelState.IsValid && ViewData.ModelState[""]?.Errors.Count > 0)
+            {
+                <div class="error-message">
+                    @foreach (var error in ViewData.ModelState[""].Errors)
+                    {
+                        <div>@error.ErrorMessage</div>
+                    }
+                </div>
+            }
+
+            <div class="form-group email-field with-icon">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-input" placeholder="Enter your email address" autocomplete="email" />
+                <span asp-validation-for="Email" class="field-validation-error"></span>
+            </div>
+
+            <div class="form-group password-field with-icon">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" class="form-input" placeholder="Enter your password" autocomplete="current-password" />
+                <span asp-validation-for="Password" class="field-validation-error"></span>
+            </div>
+
+            <div class="checkbox-group">
+                <input asp-for="RememberMe" class="checkbox-input" />
+                <label asp-for="RememberMe" class="checkbox-label"></label>
+            </div>
+
+            <button type="submit" class="login-button" id="loginBtn">
+                <span class="button-text">Sign In</span>
+            </button>
+        </form>
+
+        <div class="login-footer">
+            <p class="demo-info">Demo Credentials:</p>
+            <p class="demo-creds">Admin: admin@company.com / password123</p>
+            <p class="demo-creds">User: user@company.com / password123</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function() {
+            const button = document.getElementById('loginBtn');
+            button.classList.add('loading');
+            button.disabled = true;
+        });
+
+        window.addEventListener('load', function() {
+            const button = document.getElementById('loginBtn');
+            button.classList.remove('loading');
+            button.disabled = false;
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('input[name="Email"]').focus();
+        });
+
+        document.querySelectorAll('.field-validation-error').forEach(function(error) {
+            if (error.textContent.trim()) {
+                error.previousElementSibling.classList.add('error');
+            }
+        });
+    </script>
+</body>
+</html>
