@@ -1,6 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using AuthService.Data;
 using AuthService.Services;
+using AuthService.Messaging.Configuration;
+using AuthService.Messaging.Infrastructure;
+using AuthService.Messaging.Handlers;
+using AuthService.Messaging.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,8 +20,19 @@ builder.Services.AddDbContext<AuthDbContext>(options =>
         new MySqlServerVersion(new Version(8, 0, 21))
     ));
 
-// Register services
+// Register authentication services
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+// Configure RabbitMQ settings (bind directly from configuration)
+var rabbitMQSettings = builder.Configuration.GetSection("RabbitMQ").Get<RabbitMQSettings>() ?? throw new InvalidOperationException("RabbitMQ configuration section is missing.");
+builder.Services.AddSingleton(rabbitMQSettings);
+
+// Register RabbitMQ services
+builder.Services.AddSingleton<IRabbitMQConnectionFactory, RabbitMQConnectionFactory>();
+builder.Services.AddSingleton<IAuthenticationMessageHandler, AuthenticationMessageHandler>();
+
+// Register background service for message handling
+builder.Services.AddHostedService<AuthenticationMessageService>();
 
 // Add CORS
 builder.Services.AddCors(options =>

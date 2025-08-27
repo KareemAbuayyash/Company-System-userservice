@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using CompanySystem.Data.Context;
 using CompanySystem.Business.Interfaces;
 using CompanySystem.Business.Services;
+using CompanySystem.Business.Messaging.Configuration;
+using CompanySystem.Business.Messaging.Infrastructure;
+using CompanySystem.Business.Messaging.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,8 +24,19 @@ builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IMainPageContentService, MainPageContentService>();
 builder.Services.AddScoped<INoteService, NoteService>();
 
-// Register HTTP client for Auth API
-builder.Services.AddHttpClient<IAuthApiService, AuthApiService>();
+// Configure RabbitMQ settings (bind directly from configuration)
+var rabbitMQSettings = builder.Configuration.GetSection("RabbitMQ").Get<RabbitMQSettings>() ?? throw new InvalidOperationException("RabbitMQ configuration section is missing.");
+builder.Services.AddSingleton(rabbitMQSettings);
+
+// Register RabbitMQ services
+builder.Services.AddSingleton<IRabbitMQConnectionFactory, RabbitMQConnectionFactory>();
+builder.Services.AddScoped<IAuthenticationMessageClient, AuthenticationMessageClient>();
+
+// Register RabbitMQ-based Auth API service (comment out HTTP client for now)
+builder.Services.AddScoped<IAuthApiService, RabbitMQAuthApiService>();
+
+// Fallback HTTP client for Auth API (keep as backup)
+// builder.Services.AddHttpClient<IAuthApiService, AuthApiService>();
 
 // Add Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
