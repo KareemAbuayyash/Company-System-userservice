@@ -2,23 +2,24 @@ namespace CompanySystem.Business.Messaging.Configuration
 {
     public class RabbitMQSettings
     {
-        public string HostName { get; set; } = "localhost";
-        public int Port { get; set; } = 5672;
-        public string UserName { get; set; } = "guest";
-        public string Password { get; set; } = "guest";
-        public string VirtualHost { get; set; } = "/";
-        public TimeSpan RequestTimeout { get; set; } = TimeSpan.FromSeconds(30);
+        // These properties are expected to be provided via configuration binding (e.g. appsettings.json -> IConfiguration.Bind)
+        public required string HostName { get; set; }
+        public int Port { get; set; }
+        public required string UserName { get; set; }
+        public required string Password { get; set; }
+        public required string VirtualHost { get; set; }
+        public TimeSpan RequestTimeout { get; set; }
         
-        public AuthQueueSettings AuthQueues { get; set; } = new();
+        public required AuthQueueSettings AuthQueues { get; set; }
     }
 
     public class AuthQueueSettings
     {
-        public string RequestQueue { get; set; } = "auth.login.request";
-        public string ResponseQueue { get; set; } = "auth.login.response";
-        public string DeadLetterQueue { get; set; } = "auth.login.dlq";
-        public bool Durable { get; set; } = true;
-        public bool AutoDelete { get; set; } = false;
-        public bool Exclusive { get; set; } = false;
+        public required string RequestQueue { get; set; }
+        public required string ResponseQueue { get; set; }
+        public required string DeadLetterQueue { get; set; }
+        public bool Durable { get; set; }
+        public bool AutoDelete { get; set; }
+        public bool Exclusive { get; set; }
     }
 }

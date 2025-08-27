@@ -26,6 +26,9 @@ namespace CompanySystem.Business.Messaging.Infrastructure
 
         public IConnection CreateConnection()
         {
+            // Double-checked locking: fast path without lock for performance, then re-check inside lock.
+            // The check for null/_connection.IsOpen ensures we only create a new connection when needed
+            // and avoid race conditions when multiple threads try to access the connection concurrently.
             if (_connection == null || !_connection.IsOpen)
             {
                 lock (_lock)

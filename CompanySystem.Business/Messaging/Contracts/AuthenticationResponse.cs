@@ -2,11 +2,11 @@ namespace CompanySystem.Business.Messaging.Contracts
 {
     public class AuthenticationResponse
     {
-        public string CorrelationId { get; set; } = string.Empty;
+        public string CorrelationId { get; set; }
         public bool Success { get; set; }
         public string Message { get; set; } = string.Empty;
         public AuthenticatedUser? User { get; set; }
-        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+        public DateTime Timestamp { get; set; }
     }
 
     public class AuthenticatedUser

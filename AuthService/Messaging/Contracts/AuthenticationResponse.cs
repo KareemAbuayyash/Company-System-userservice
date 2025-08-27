@@ -2,9 +2,9 @@ namespace AuthService.Messaging.Contracts
 {
     public class AuthenticationResponse
     {
-        public string CorrelationId { get; set; } = string.Empty;
+        public string CorrelationId { get; set; }
         public bool Success { get; set; }
-        public string Message { get; set; } = string.Empty;
+        public string Message { get; set; } 
         public AuthenticatedUser? User { get; set; }
         public DateTime Timestamp { get; set; } = DateTime.UtcNow;
     }

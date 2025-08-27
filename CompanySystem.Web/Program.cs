@@ -24,9 +24,8 @@ builder.Services.AddScoped<IDepartmentService, DepartmentService>();
 builder.Services.AddScoped<IMainPageContentService, MainPageContentService>();
 builder.Services.AddScoped<INoteService, NoteService>();
 
-// Configure RabbitMQ settings
-var rabbitMQSettings = new RabbitMQSettings();
-builder.Configuration.GetSection("RabbitMQ").Bind(rabbitMQSettings);
+// Configure RabbitMQ settings (bind directly from configuration)
+var rabbitMQSettings = builder.Configuration.GetSection("RabbitMQ").Get<RabbitMQSettings>() ?? throw new InvalidOperationException("RabbitMQ configuration section is missing.");
 builder.Services.AddSingleton(rabbitMQSettings);
 
 // Register RabbitMQ services

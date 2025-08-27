@@ -25,6 +25,9 @@ namespace AuthService.Messaging.Infrastructure
 
         public IConnection CreateConnection()
         {
+            // Use double-checked locking: first check without lock for performance, then re-check inside lock.
+            // The null / IsOpen check ensures we only create a new connection when none exists or the existing one was closed.
+            // This prevents unnecessary recreation of the connection under concurrent callers while keeping thread-safety.
             if (_connection == null || !_connection.IsOpen)
             {
                 lock (_lock)
@@ -45,6 +48,7 @@ namespace AuthService.Messaging.Infrastructure
 
                         try
                         {
+                            // create and assign to the backing field while holding the lock
                             _connection = factory.CreateConnection("AuthService");
                             _logger.LogInformation("RabbitMQ connection established successfully");
                         }
